@@ -1,18 +1,22 @@
 const calculatorItems = document.querySelectorAll('.calculator__item');
-const currencies = {
+const rates = {
      RUB: 1,
-     USD: 100,
-     EUR: 150,
-     BTC: 0.00001,
-     ETH: 0.00005
+     USD: 60,
+     EUR: 70,
+     BTC: 1000,
+     ETH: 500,
 }
-const selectCurrency = ['RUB','USD'];
+const selectCurrencies = ['RUB','USD'];
+const values = [0, 0]
+const reversIdx = [1, 0]
 
-calculatorItems.forEach((itemBlock, calculatorItemIdx) =>{
 
+calculatorItems.forEach((itemBlock, thisIdx) =>{
 
     const selectbox = itemBlock.querySelector('.selectbox')
     const selectboxSelected = itemBlock.querySelector('.selectbox__selected')
+    const input = itemBlock.querySelector('.calculator__input')
+    const otherIdx = reversIdx[thisIdx]
 
     //Выпадающий список
 
@@ -29,7 +33,7 @@ calculatorItems.forEach((itemBlock, calculatorItemIdx) =>{
         }
     }
 
-     //Функция вабора валют
+     //Функция вабора валют 
      selectbox.onclick = (event) => {
         const target = event.target
         
@@ -42,8 +46,31 @@ calculatorItems.forEach((itemBlock, calculatorItemIdx) =>{
                 selectbox.querySelector('li.active').classList.remove('active')
                 target.classList.add('active')
                 selectboxSelected.querySelector('span').innerText = currencyName
-                selectCurrency[calculatorItemIdx] = currencyName
+                selectCurrencies[thisIdx] = currencyName
+                currencyCalculate()
                 }
             }
-     
+
+
+    const reg = /^\d+$/
+
+    input.oninput = () => {
+        const value = Number(input.value)
+
+        if(reg.test(value) || value === ''){
+
+            values[thisIdx] = value
+            currencyCalculate()
+
+        }else{
+            input.value = values[thisIdx]
+        }
+    }
+     function currencyCalculate(){
+        
+        const value = values[thisIdx] * rates[selectCurrencies[thisIdx]]
+        const result = value / rates[selectCurrencies[otherIdx]]
+        values[otherIdx] = result
+        calculatorItems[otherIdx].querySelector('.calculator__input').value = result
+    }
 })
